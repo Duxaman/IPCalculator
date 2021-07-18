@@ -117,8 +117,156 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="navigate_cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\navigate_cross.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="FileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 20</value>
+  </data>
+  <data name="FileToolStripMenuItem.Text" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="OpenNetTreeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>149, 22</value>
+  </data>
+  <data name="OpenNetTreeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Open Net Tree</value>
+  </data>
+  <data name="SaveNetTreeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>149, 22</value>
+  </data>
+  <data name="SaveNetTreeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Save Net Tree</value>
+  </data>
+  <data name="TreeViewContextMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 48</value>
+  </data>
+  <data name="AggregateMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>159, 22</value>
+  </data>
+  <data name="AggregateMenuItem.Text" xml:space="preserve">
+    <value>Aggregate node</value>
+  </data>
+  <data name="ClearMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>159, 22</value>
+  </data>
+  <data name="ClearMenuItem.Text" xml:space="preserve">
+    <value>Clear Node</value>
+  </data>
+  <data name="Address.HeaderText" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Address.Width" type="System.Int32, mscorlib">
+    <value>74</value>
+  </data>
+  <data name="StartAddress.HeaderText" xml:space="preserve">
+    <value>Start address</value>
+  </data>
+  <data name="StartAddress.Width" type="System.Int32, mscorlib">
+    <value>90</value>
+  </data>
+  <data name="EndAddress.HeaderText" xml:space="preserve">
+    <value>End address</value>
+  </data>
+  <data name="EndAddress.Width" type="System.Int32, mscorlib">
+    <value>86</value>
+  </data>
+  <data name="BroadcastAddress.HeaderText" xml:space="preserve">
+    <value>Broadcast address</value>
+  </data>
+  <data name="BroadcastAddress.Width" type="System.Int32, mscorlib">
+    <value>114</value>
+  </data>
+  <data name="SubnetMask.HeaderText" xml:space="preserve">
+    <value>Subnet mask</value>
+  </data>
+  <data name="SubnetMask.Width" type="System.Int32, mscorlib">
+    <value>87</value>
+  </data>
+  <data name="TotalHosts.HeaderText" xml:space="preserve">
+    <value>Total hosts</value>
+  </data>
+  <data name="TotalHosts.Width" type="System.Int32, mscorlib">
+    <value>78</value>
+  </data>
+  <data name="Occupied.HeaderText" xml:space="preserve">
+    <value>Occupied</value>
+  </data>
+  <data name="Occupied.Width" type="System.Int32, mscorlib">
+    <value>78</value>
+  </data>
+  <data name="Free.HeaderText" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="Free.Width" type="System.Int32, mscorlib">
+    <value>54</value>
+  </data>
+  <data name="RootAddressBox.Text" xml:space="preserve">
+    <value>Net</value>
+  </data>
+  <data name="InfoBtn.Text" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="InfoBox.Text" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 14</value>
+  </data>
+  <data name="label7.Text" xml:space="preserve">
+    <value>Total hosts</value>
+  </data>
+  <data name="label6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>76, 14</value>
+  </data>
+  <data name="label6.Text" xml:space="preserve">
+    <value>Reverse mask</value>
+  </data>
+  <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>69, 14</value>
+  </data>
+  <data name="label5.Text" xml:space="preserve">
+    <value>Subnet mask</value>
+  </data>
+  <data name="label5.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="label4.Text" xml:space="preserve">
+    <value>Broadcast address</value>
+  </data>
+  <data name="label4.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 14</value>
+  </data>
+  <data name="label3.Text" xml:space="preserve">
+    <value>End address</value>
+  </data>
+  <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>73, 14</value>
+  </data>
+  <data name="label2.Text" xml:space="preserve">
+    <value>Start address</value>
+  </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>49, 14</value>
+  </data>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="RedivideBtn.Text" xml:space="preserve">
+    <value>Redivide</value>
+  </data>
+  <data name="DivideBtn.Text" xml:space="preserve">
+    <value>Divide</value>
+  </data>
+  <data name="HostAm.HeaderText" xml:space="preserve">
+    <value>Host amount</value>
+  </data>
+  <data name="Color.HeaderText" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>IP Calculator</value>
   </data>
 </root>
