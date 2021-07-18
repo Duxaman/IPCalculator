@@ -46,10 +46,10 @@ namespace IPCalculator
         {
             get
             {
-                return Address | ReverseMask;
+                return Address | Wildcard;
             }
         }
-        public Address ReverseMask
+        public Address Wildcard
         {
             get
             {
@@ -65,7 +65,7 @@ namespace IPCalculator
         }
         public Net(Address address, int mask)
         {
-            if(mask < 1 || mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
+            if(mask < 0 || mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
             Address = address;
             Mask = mask;
             Address = Address & FullMask; //in case input is not the net address
@@ -77,7 +77,7 @@ namespace IPCalculator
                 string[] elements = net.Split('/');
                 Address = new Address(elements[0]);
                 Mask = System.Convert.ToInt32(elements[1]);
-                if (Mask < 1 || Mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
+                if (Mask < 0 || Mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
                 Address = Address & FullMask; //in case input is not the net address
             }
             catch(ArgumentException)

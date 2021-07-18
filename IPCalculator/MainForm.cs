@@ -47,7 +47,7 @@ namespace IPCalculator
             EndAddressBox.Text = net.EndAddress.ToString();
             BroadcastTextBox.Text = net.BroadcastAddress.ToString();
             SubnetMaskTextBox.Text = net.FullMask.ToString();
-            ReverseMaskTextBox.Text = net.ReverseMask.ToString();
+            ReverseMaskTextBox.Text = net.Wildcard.ToString();
             TotalHostBox.Text = net.HostAm.ToString();
 
         }

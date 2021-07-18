@@ -61,12 +61,14 @@
             this.BroadcastTextBox = new System.Windows.Forms.TextBox();
             this.EndAddressBox = new System.Windows.Forms.TextBox();
             this.StartAddressBox = new System.Windows.Forms.TextBox();
+            this.AddressTextBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.NetsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.NetsBtnPanel = new System.Windows.Forms.Panel();
             this.RedivideBtn = new System.Windows.Forms.Button();
@@ -78,8 +80,6 @@
             this.Color = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeleteColiumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.ColorPicker = new System.Windows.Forms.ColorDialog();
-            this.label1 = new System.Windows.Forms.Label();
-            this.AddressTextBox = new System.Windows.Forms.TextBox();
             this.MainMenuStrip.SuspendLayout();
             this.MainGrid.SuspendLayout();
             this.RightPanel.SuspendLayout();
@@ -95,29 +95,29 @@
             // 
             // MainMenuStrip
             // 
+            resources.ApplyResources(this.MainMenuStrip, "MainMenuStrip");
             this.MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileToolStripMenuItem});
-            resources.ApplyResources(this.MainMenuStrip, "MainMenuStrip");
             this.MainMenuStrip.Name = "MainMenuStrip";
             // 
             // FileToolStripMenuItem
             // 
+            resources.ApplyResources(this.FileToolStripMenuItem, "FileToolStripMenuItem");
             this.FileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenNetTreeToolStripMenuItem,
             this.SaveNetTreeToolStripMenuItem});
             this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
-            resources.ApplyResources(this.FileToolStripMenuItem, "FileToolStripMenuItem");
             // 
             // OpenNetTreeToolStripMenuItem
             // 
-            this.OpenNetTreeToolStripMenuItem.Name = "OpenNetTreeToolStripMenuItem";
             resources.ApplyResources(this.OpenNetTreeToolStripMenuItem, "OpenNetTreeToolStripMenuItem");
+            this.OpenNetTreeToolStripMenuItem.Name = "OpenNetTreeToolStripMenuItem";
             this.OpenNetTreeToolStripMenuItem.Click += new System.EventHandler(this.OpenNetTreeToolStripMenuItem_Click);
             // 
             // SaveNetTreeToolStripMenuItem
             // 
-            this.SaveNetTreeToolStripMenuItem.Name = "SaveNetTreeToolStripMenuItem";
             resources.ApplyResources(this.SaveNetTreeToolStripMenuItem, "SaveNetTreeToolStripMenuItem");
+            this.SaveNetTreeToolStripMenuItem.Name = "SaveNetTreeToolStripMenuItem";
             this.SaveNetTreeToolStripMenuItem.Click += new System.EventHandler(this.SaveNetTreeToolStripMenuItem_Click);
             // 
             // MainGrid
@@ -136,30 +136,31 @@
             // 
             // NetTreeView
             // 
-            this.NetTreeView.ContextMenuStrip = this.TreeViewContextMenu;
             resources.ApplyResources(this.NetTreeView, "NetTreeView");
+            this.NetTreeView.ContextMenuStrip = this.TreeViewContextMenu;
             this.NetTreeView.Name = "NetTreeView";
             // 
             // TreeViewContextMenu
             // 
+            resources.ApplyResources(this.TreeViewContextMenu, "TreeViewContextMenu");
             this.TreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AggregateMenuItem,
             this.ClearMenuItem});
             this.TreeViewContextMenu.Name = "TreeViewContextMenu";
-            resources.ApplyResources(this.TreeViewContextMenu, "TreeViewContextMenu");
             // 
             // AggregateMenuItem
             // 
-            this.AggregateMenuItem.Name = "AggregateMenuItem";
             resources.ApplyResources(this.AggregateMenuItem, "AggregateMenuItem");
+            this.AggregateMenuItem.Name = "AggregateMenuItem";
             // 
             // ClearMenuItem
             // 
-            this.ClearMenuItem.Name = "ClearMenuItem";
             resources.ApplyResources(this.ClearMenuItem, "ClearMenuItem");
+            this.ClearMenuItem.Name = "ClearMenuItem";
             // 
             // NetListDataGridView
             // 
+            resources.ApplyResources(this.NetListDataGridView, "NetListDataGridView");
             this.NetListDataGridView.AllowUserToAddRows = false;
             this.NetListDataGridView.AllowUserToDeleteRows = false;
             this.NetListDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
@@ -175,7 +176,6 @@
             this.TotalHosts,
             this.Occupied,
             this.Free});
-            resources.ApplyResources(this.NetListDataGridView, "NetListDataGridView");
             this.NetListDataGridView.Name = "NetListDataGridView";
             this.NetListDataGridView.ReadOnly = true;
             this.NetListDataGridView.RowHeadersVisible = false;
@@ -253,9 +253,9 @@
             // 
             // RootAddressBox
             // 
+            resources.ApplyResources(this.RootAddressBox, "RootAddressBox");
             this.RootAddressBox.Controls.Add(this.InfoBtn);
             this.RootAddressBox.Controls.Add(this.AddressBox);
-            resources.ApplyResources(this.RootAddressBox, "RootAddressBox");
             this.RootAddressBox.Name = "RootAddressBox";
             this.RootAddressBox.TabStop = false;
             // 
@@ -273,6 +273,7 @@
             // 
             // InfoBox
             // 
+            resources.ApplyResources(this.InfoBox, "InfoBox");
             this.InfoBox.Controls.Add(this.TotalHostBox);
             this.InfoBox.Controls.Add(this.ReverseMaskTextBox);
             this.InfoBox.Controls.Add(this.SubnetMaskTextBox);
@@ -287,7 +288,6 @@
             this.InfoBox.Controls.Add(this.label3);
             this.InfoBox.Controls.Add(this.label2);
             this.InfoBox.Controls.Add(this.label1);
-            resources.ApplyResources(this.InfoBox, "InfoBox");
             this.InfoBox.Name = "InfoBox";
             this.InfoBox.TabStop = false;
             // 
@@ -321,6 +321,11 @@
             resources.ApplyResources(this.StartAddressBox, "StartAddressBox");
             this.StartAddressBox.Name = "StartAddressBox";
             // 
+            // AddressTextBox
+            // 
+            resources.ApplyResources(this.AddressTextBox, "AddressTextBox");
+            this.AddressTextBox.Name = "AddressTextBox";
+            // 
             // label7
             // 
             resources.ApplyResources(this.label7, "label7");
@@ -351,6 +356,11 @@
             resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
             // 
+            // label1
+            // 
+            resources.ApplyResources(this.label1, "label1");
+            this.label1.Name = "label1";
+            // 
             // NetsPanel
             // 
             resources.ApplyResources(this.NetsPanel, "NetsPanel");
@@ -360,11 +370,11 @@
             // 
             // NetsBtnPanel
             // 
+            resources.ApplyResources(this.NetsBtnPanel, "NetsBtnPanel");
             this.NetsBtnPanel.Controls.Add(this.RedivideBtn);
             this.NetsBtnPanel.Controls.Add(this.DivideBtn);
             this.NetsBtnPanel.Controls.Add(this.DeleteSegmentBtn);
             this.NetsBtnPanel.Controls.Add(this.AddSegmentBtn);
-            resources.ApplyResources(this.NetsBtnPanel, "NetsBtnPanel");
             this.NetsBtnPanel.Name = "NetsBtnPanel";
             // 
             // RedivideBtn
@@ -397,6 +407,7 @@
             // 
             // NetsGrid
             // 
+            resources.ApplyResources(this.NetsGrid, "NetsGrid");
             this.NetsGrid.AllowUserToAddRows = false;
             this.NetsGrid.AllowUserToDeleteRows = false;
             this.NetsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
@@ -406,7 +417,6 @@
             this.HostAm,
             this.Color,
             this.DeleteColiumn});
-            resources.ApplyResources(this.NetsGrid, "NetsGrid");
             this.NetsGrid.Name = "NetsGrid";
             this.NetsGrid.RowHeadersVisible = false;
             this.NetsGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.NetsGrid_CellClick);
@@ -431,16 +441,6 @@
             this.DeleteColiumn.Image = global::IPCalculator.Properties.Resources.navigate_cross;
             this.DeleteColiumn.Name = "DeleteColiumn";
             this.DeleteColiumn.ReadOnly = true;
-            // 
-            // label1
-            // 
-            resources.ApplyResources(this.label1, "label1");
-            this.label1.Name = "label1";
-            // 
-            // AddressTextBox
-            // 
-            resources.ApplyResources(this.AddressTextBox, "AddressTextBox");
-            this.AddressTextBox.Name = "AddressTextBox";
             // 
             // MainForm
             // 

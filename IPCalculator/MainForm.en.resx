@@ -216,10 +216,10 @@
     <value>Total hosts</value>
   </data>
   <data name="label6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>76, 14</value>
+    <value>49, 14</value>
   </data>
   <data name="label6.Text" xml:space="preserve">
-    <value>Reverse mask</value>
+    <value>Wildcard</value>
   </data>
   <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
     <value>69, 14</value>
@@ -263,8 +263,14 @@
   <data name="HostAm.HeaderText" xml:space="preserve">
     <value>Host amount</value>
   </data>
+  <data name="HostAm.Width" type="System.Int32, mscorlib">
+    <value>92</value>
+  </data>
   <data name="Color.HeaderText" xml:space="preserve">
     <value>Color</value>
+  </data>
+  <data name="Color.Width" type="System.Int32, mscorlib">
+    <value>57</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>IP Calculator</value>
