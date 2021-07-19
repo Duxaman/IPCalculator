@@ -74,7 +74,7 @@ namespace IPCalculator
         {
             try
             {
-                string[] elements = net.Split('/');
+                string[] elements = net.Trim().Split('/');
                 Address = new Address(elements[0]);
                 Mask = System.Convert.ToInt32(elements[1]);
                 if (Mask < 0 || Mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO

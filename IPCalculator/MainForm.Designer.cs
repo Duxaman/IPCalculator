@@ -71,7 +71,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.NetsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.NetsBtnPanel = new System.Windows.Forms.Panel();
-            this.RedivideBtn = new System.Windows.Forms.Button();
+            this.ClearTreeBtn = new System.Windows.Forms.Button();
             this.DivideBtn = new System.Windows.Forms.Button();
             this.DeleteSegmentBtn = new System.Windows.Forms.Button();
             this.AddSegmentBtn = new System.Windows.Forms.Button();
@@ -80,6 +80,8 @@
             this.Color = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DeleteColiumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.ColorPicker = new System.Windows.Forms.ColorDialog();
+            this.SaveNetTreeDialog = new System.Windows.Forms.SaveFileDialog();
+            this.OpenNetTreeDialog = new System.Windows.Forms.OpenFileDialog();
             this.MainMenuStrip.SuspendLayout();
             this.MainGrid.SuspendLayout();
             this.RightPanel.SuspendLayout();
@@ -95,29 +97,29 @@
             // 
             // MainMenuStrip
             // 
-            resources.ApplyResources(this.MainMenuStrip, "MainMenuStrip");
             this.MainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileToolStripMenuItem});
+            resources.ApplyResources(this.MainMenuStrip, "MainMenuStrip");
             this.MainMenuStrip.Name = "MainMenuStrip";
             // 
             // FileToolStripMenuItem
             // 
-            resources.ApplyResources(this.FileToolStripMenuItem, "FileToolStripMenuItem");
             this.FileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OpenNetTreeToolStripMenuItem,
             this.SaveNetTreeToolStripMenuItem});
             this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
+            resources.ApplyResources(this.FileToolStripMenuItem, "FileToolStripMenuItem");
             // 
             // OpenNetTreeToolStripMenuItem
             // 
-            resources.ApplyResources(this.OpenNetTreeToolStripMenuItem, "OpenNetTreeToolStripMenuItem");
             this.OpenNetTreeToolStripMenuItem.Name = "OpenNetTreeToolStripMenuItem";
+            resources.ApplyResources(this.OpenNetTreeToolStripMenuItem, "OpenNetTreeToolStripMenuItem");
             this.OpenNetTreeToolStripMenuItem.Click += new System.EventHandler(this.OpenNetTreeToolStripMenuItem_Click);
             // 
             // SaveNetTreeToolStripMenuItem
             // 
-            resources.ApplyResources(this.SaveNetTreeToolStripMenuItem, "SaveNetTreeToolStripMenuItem");
             this.SaveNetTreeToolStripMenuItem.Name = "SaveNetTreeToolStripMenuItem";
+            resources.ApplyResources(this.SaveNetTreeToolStripMenuItem, "SaveNetTreeToolStripMenuItem");
             this.SaveNetTreeToolStripMenuItem.Click += new System.EventHandler(this.SaveNetTreeToolStripMenuItem_Click);
             // 
             // MainGrid
@@ -136,31 +138,32 @@
             // 
             // NetTreeView
             // 
-            resources.ApplyResources(this.NetTreeView, "NetTreeView");
             this.NetTreeView.ContextMenuStrip = this.TreeViewContextMenu;
+            resources.ApplyResources(this.NetTreeView, "NetTreeView");
             this.NetTreeView.Name = "NetTreeView";
             // 
             // TreeViewContextMenu
             // 
-            resources.ApplyResources(this.TreeViewContextMenu, "TreeViewContextMenu");
             this.TreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AggregateMenuItem,
             this.ClearMenuItem});
             this.TreeViewContextMenu.Name = "TreeViewContextMenu";
+            resources.ApplyResources(this.TreeViewContextMenu, "TreeViewContextMenu");
             // 
             // AggregateMenuItem
             // 
-            resources.ApplyResources(this.AggregateMenuItem, "AggregateMenuItem");
             this.AggregateMenuItem.Name = "AggregateMenuItem";
+            resources.ApplyResources(this.AggregateMenuItem, "AggregateMenuItem");
+            this.AggregateMenuItem.Click += new System.EventHandler(this.AggregateMenuItem_Click);
             // 
             // ClearMenuItem
             // 
-            resources.ApplyResources(this.ClearMenuItem, "ClearMenuItem");
             this.ClearMenuItem.Name = "ClearMenuItem";
+            resources.ApplyResources(this.ClearMenuItem, "ClearMenuItem");
+            this.ClearMenuItem.Click += new System.EventHandler(this.ClearMenuItem_Click);
             // 
             // NetListDataGridView
             // 
-            resources.ApplyResources(this.NetListDataGridView, "NetListDataGridView");
             this.NetListDataGridView.AllowUserToAddRows = false;
             this.NetListDataGridView.AllowUserToDeleteRows = false;
             this.NetListDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
@@ -176,6 +179,7 @@
             this.TotalHosts,
             this.Occupied,
             this.Free});
+            resources.ApplyResources(this.NetListDataGridView, "NetListDataGridView");
             this.NetListDataGridView.Name = "NetListDataGridView";
             this.NetListDataGridView.ReadOnly = true;
             this.NetListDataGridView.RowHeadersVisible = false;
@@ -253,9 +257,9 @@
             // 
             // RootAddressBox
             // 
-            resources.ApplyResources(this.RootAddressBox, "RootAddressBox");
             this.RootAddressBox.Controls.Add(this.InfoBtn);
             this.RootAddressBox.Controls.Add(this.AddressBox);
+            resources.ApplyResources(this.RootAddressBox, "RootAddressBox");
             this.RootAddressBox.Name = "RootAddressBox";
             this.RootAddressBox.TabStop = false;
             // 
@@ -273,7 +277,6 @@
             // 
             // InfoBox
             // 
-            resources.ApplyResources(this.InfoBox, "InfoBox");
             this.InfoBox.Controls.Add(this.TotalHostBox);
             this.InfoBox.Controls.Add(this.ReverseMaskTextBox);
             this.InfoBox.Controls.Add(this.SubnetMaskTextBox);
@@ -288,6 +291,7 @@
             this.InfoBox.Controls.Add(this.label3);
             this.InfoBox.Controls.Add(this.label2);
             this.InfoBox.Controls.Add(this.label1);
+            resources.ApplyResources(this.InfoBox, "InfoBox");
             this.InfoBox.Name = "InfoBox";
             this.InfoBox.TabStop = false;
             // 
@@ -370,19 +374,19 @@
             // 
             // NetsBtnPanel
             // 
-            resources.ApplyResources(this.NetsBtnPanel, "NetsBtnPanel");
-            this.NetsBtnPanel.Controls.Add(this.RedivideBtn);
+            this.NetsBtnPanel.Controls.Add(this.ClearTreeBtn);
             this.NetsBtnPanel.Controls.Add(this.DivideBtn);
             this.NetsBtnPanel.Controls.Add(this.DeleteSegmentBtn);
             this.NetsBtnPanel.Controls.Add(this.AddSegmentBtn);
+            resources.ApplyResources(this.NetsBtnPanel, "NetsBtnPanel");
             this.NetsBtnPanel.Name = "NetsBtnPanel";
             // 
-            // RedivideBtn
+            // ClearTreeBtn
             // 
-            resources.ApplyResources(this.RedivideBtn, "RedivideBtn");
-            this.RedivideBtn.Name = "RedivideBtn";
-            this.RedivideBtn.UseVisualStyleBackColor = true;
-            this.RedivideBtn.Click += new System.EventHandler(this.RedivideBtn_Click);
+            resources.ApplyResources(this.ClearTreeBtn, "ClearTreeBtn");
+            this.ClearTreeBtn.Name = "ClearTreeBtn";
+            this.ClearTreeBtn.UseVisualStyleBackColor = true;
+            this.ClearTreeBtn.Click += new System.EventHandler(this.ClearBtnClick);
             // 
             // DivideBtn
             // 
@@ -407,7 +411,6 @@
             // 
             // NetsGrid
             // 
-            resources.ApplyResources(this.NetsGrid, "NetsGrid");
             this.NetsGrid.AllowUserToAddRows = false;
             this.NetsGrid.AllowUserToDeleteRows = false;
             this.NetsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
@@ -417,6 +420,7 @@
             this.HostAm,
             this.Color,
             this.DeleteColiumn});
+            resources.ApplyResources(this.NetsGrid, "NetsGrid");
             this.NetsGrid.Name = "NetsGrid";
             this.NetsGrid.RowHeadersVisible = false;
             this.NetsGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.NetsGrid_CellClick);
@@ -441,6 +445,16 @@
             this.DeleteColiumn.Image = global::IPCalculator.Properties.Resources.navigate_cross;
             this.DeleteColiumn.Name = "DeleteColiumn";
             this.DeleteColiumn.ReadOnly = true;
+            // 
+            // SaveNetTreeDialog
+            // 
+            this.SaveNetTreeDialog.DefaultExt = "json";
+            resources.ApplyResources(this.SaveNetTreeDialog, "SaveNetTreeDialog");
+            // 
+            // OpenNetTreeDialog
+            // 
+            this.OpenNetTreeDialog.DefaultExt = "json";
+            resources.ApplyResources(this.OpenNetTreeDialog, "OpenNetTreeDialog");
             // 
             // MainForm
             // 
@@ -497,7 +511,7 @@
         private System.Windows.Forms.TextBox TotalHostBox;
         private System.Windows.Forms.TableLayoutPanel NetsPanel;
         private System.Windows.Forms.Panel NetsBtnPanel;
-        private System.Windows.Forms.Button RedivideBtn;
+        private System.Windows.Forms.Button ClearTreeBtn;
         private System.Windows.Forms.Button DivideBtn;
         private System.Windows.Forms.Button DeleteSegmentBtn;
         private System.Windows.Forms.Button AddSegmentBtn;
@@ -520,6 +534,8 @@
         private System.Windows.Forms.ColorDialog ColorPicker;
         private System.Windows.Forms.TextBox AddressTextBox;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.SaveFileDialog SaveNetTreeDialog;
+        private System.Windows.Forms.OpenFileDialog OpenNetTreeDialog;
     }
 }
 

@@ -254,8 +254,8 @@
   <data name="label1.Text" xml:space="preserve">
     <value>Address</value>
   </data>
-  <data name="RedivideBtn.Text" xml:space="preserve">
-    <value>Redivide</value>
+  <data name="ClearTreeBtn.Text" xml:space="preserve">
+    <value>Clear tree</value>
   </data>
   <data name="DivideBtn.Text" xml:space="preserve">
     <value>Divide</value>

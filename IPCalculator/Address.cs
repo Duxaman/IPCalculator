@@ -25,7 +25,7 @@ namespace IPCalculator
         {
             try
             {
-                string[] Elements = address.Split('.');
+                string[] Elements = address.Trim().Split('.');
                 if (Elements.Length != 4) throw new ArgumentException("Недопустимый формат адреса"); //TODO: language
                 else
                 {
