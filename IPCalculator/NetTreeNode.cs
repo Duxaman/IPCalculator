@@ -24,7 +24,7 @@ namespace IPCalculator
         public NetTreeNode(Net node)
         {
             Net = node;
-            State = State.Leaf;
+            State = State.Free;
             OccupyId = -1;
         }
     }

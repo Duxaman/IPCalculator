@@ -138,9 +138,15 @@
             // 
             // NetTreeView
             // 
+            this.NetTreeView.BackColor = System.Drawing.Color.WhiteSmoke;
             this.NetTreeView.ContextMenuStrip = this.TreeViewContextMenu;
+            this.NetTreeView.Cursor = System.Windows.Forms.Cursors.Hand;
             resources.ApplyResources(this.NetTreeView, "NetTreeView");
+            this.NetTreeView.FullRowSelect = true;
+            this.NetTreeView.HideSelection = false;
+            this.NetTreeView.HotTracking = true;
             this.NetTreeView.Name = "NetTreeView";
+            this.NetTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.NetTreeView_NodeMouseClick);
             // 
             // TreeViewContextMenu
             // 
@@ -166,7 +172,7 @@
             // 
             this.NetListDataGridView.AllowUserToAddRows = false;
             this.NetListDataGridView.AllowUserToDeleteRows = false;
-            this.NetListDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.NetListDataGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.NetListDataGridView.BackgroundColor = System.Drawing.SystemColors.ControlLight;
             this.NetListDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.NetListDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -421,9 +427,12 @@
             this.Color,
             this.DeleteColiumn});
             resources.ApplyResources(this.NetsGrid, "NetsGrid");
+            this.NetsGrid.MultiSelect = false;
             this.NetsGrid.Name = "NetsGrid";
             this.NetsGrid.RowHeadersVisible = false;
+            this.NetsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.NetsGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.NetsGrid_CellClick);
+            this.NetsGrid.SelectionChanged += new System.EventHandler(this.NetsGrid_SelectionChanged);
             // 
             // HostAm
             // 

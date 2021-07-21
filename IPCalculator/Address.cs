@@ -1,14 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IPCalculator
 {
     sealed public class Address
     {
         private byte[] Bytes;
+
+        public UInt32 RawInt
+        {
+            get
+            {
+                UInt32 RawInt = 0;
+                RawInt += Bytes[0];
+                RawInt <<= 8;
+                RawInt += Bytes[1];
+                RawInt <<= 8;
+                RawInt += Bytes[2];
+                RawInt <<= 8;
+                RawInt += Bytes[3];
+                return RawInt; 
+            }
+        }
+
+        public Address(UInt32 Address)
+        {
+            Bytes = new byte[4];
+            Bytes[0] = (byte)(Address >> 24);
+            Bytes[1] = (byte)(Address >> 16);
+            Bytes[2] = (byte)(Address >> 8);
+            Bytes[3] = (byte)(Address);
+        }
         public Address(byte oct1, byte oct2, byte oct3, byte oct4)
         {
             Bytes = new byte[] { oct1, oct2, oct3, oct4 };
@@ -32,11 +54,11 @@ namespace IPCalculator
                     Bytes = new byte[] { Convert.ToByte(Elements[0]), Convert.ToByte(Elements[1]), Convert.ToByte(Elements[2]), Convert.ToByte(Elements[3]) };
                 }
             }
-            catch(ArgumentException)
+            catch (ArgumentException)
             {
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new ArgumentException("Недопустимый формат адреса: " + ex.Message);
             }
@@ -78,6 +100,11 @@ namespace IPCalculator
                 Inverted[i] = (byte)~A[i];
             }
             return Inverted;
+        }
+        public static Address InvertBit(Address A, int positionfromleft)
+        {
+            UInt32 RawInt = A.RawInt;
+            return new Address(RawInt ^ ((UInt32)1 << (32 - positionfromleft)));
         }
         public static bool operator ==(Address A, Address B)
         {

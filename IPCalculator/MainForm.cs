@@ -2,29 +2,33 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace IPCalculator
 {
     public partial class MainForm : Form
     {
-        private System.Drawing.Color[] Colors; //for saving purposes;
+        private Dictionary<int, NetSegment> Segments; //stores info about currently allocated nets
         private NetTree NetTree;
         public MainForm()
         {
             InitializeComponent();
+            Segments = new Dictionary<int, NetSegment>();
         }
+
+        #region Open/Save
 
         private void OpenNetTreeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenNetTreeDialog.ShowDialog() == DialogResult.OK)
             {
-                string JsonText = File.ReadAllText(OpenNetTreeDialog.FileName);
+                string JsonText = File.ReadAllText(OpenNetTreeDialog.FileName); 
                 try
                 {
-                    dynamic Object = JsonConvert.DeserializeObject<dynamic>(JsonText);
-                    Colors = Object[0];
+                    dynamic Object = JsonConvert.DeserializeObject<dynamic>(JsonText);  //read allocated segments and tree
+                    Segments = Object[0];
                     NetTree = Object[1];
-                    ParseNetTree(NetTree.Root);
+                    ParseNetTree(NetTree.Root);   //update Tree and summary
                 }
                 catch (Exception ex)
                 {
@@ -40,15 +44,18 @@ namespace IPCalculator
                 if (SaveNetTreeDialog.ShowDialog() == DialogResult.OK)
                 {
                     //save tree and color info
-                    File.WriteAllText(SaveNetTreeDialog.FileName, JsonConvert.SerializeObject(new { Colors, NetTree }));
+                    File.WriteAllText(SaveNetTreeDialog.FileName, JsonConvert.SerializeObject(new { Segments, NetTree }));
                 }
             }
             else
             {
-                MessageBox.Show("Дерево сетей не инициализировано"); //TODO
+                MessageBox.Show("Дерево сетей не инициализировано");
             }
         }
 
+        #endregion
+
+        #region NetInfoPanel
         private void InfoBtn_Click(object sender, EventArgs e)
         {
             try
@@ -62,6 +69,10 @@ namespace IPCalculator
             }
         }
 
+        /// <summary>
+        /// Shows information about the net at the info panel
+        /// </summary>
+        /// <param name="net"></param>
         private void ShowNetInfo(Net net)
         {
             AddressTextBox.Text = net.Address.ToString();
@@ -73,24 +84,22 @@ namespace IPCalculator
             TotalHostBox.Text = net.HostAm.ToString();
 
         }
-        #region BtnPanel
+        #endregion
 
-        private int[] GetSegmentsToDistribute()
+        #region DownLeftPanel
+
+        #region NetsGridControl
+        private Random rnd = new Random();
+
+        private void NetsGrid_SelectionChanged(object sender, EventArgs e)
         {
-            NetsGrid.Sort(NetsGrid.Columns[0], System.ComponentModel.ListSortDirection.Descending);
-            int[] nets = new int[NetsGrid.RowCount];
-            Colors = new System.Drawing.Color[NetsGrid.RowCount];
-            for (int i = 0; i < NetsGrid.RowCount; ++i)
-            {
-                nets[i] = Convert.ToInt32(NetsGrid.Rows[i].Cells[0].Value);
-                Colors[i] = NetsGrid.Rows[i].Cells[1].Style.BackColor;
-            }
-            return nets;
+            NetsGrid.ClearSelection();
         }
 
         private void AddSegmentBtn_Click(object sender, EventArgs e)
         {
             NetsGrid.RowCount += 1;
+            NetsGrid.Rows[NetsGrid.RowCount - 1].Cells[1].Style.BackColor = System.Drawing.Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
         }
 
         private void DeleteSegmentBtn_Click(object sender, EventArgs e)
@@ -99,45 +108,6 @@ namespace IPCalculator
             {
                 NetsGrid.RowCount -= 1;
             }
-        }
-
-        private void DivideBtn_Click(object sender, EventArgs e)
-        {
-            if (NetsGrid.RowCount != 0)
-            {
-                int[] nets = GetSegmentsToDistribute();
-                try
-                {
-                    if (NetTreeView.SelectedNode != null)
-                    {
-                        NetTree.DistributeNet(NetTree.LocateNode(NetTree.Root, new Net(NetTreeView.SelectedNode.Text)), nets);
-                    }
-                    else
-                    {
-                        if (NetTree == null)
-                        {
-                            NetTree = new NetTree(new Net(AddressTextBox.Text));
-                        }
-                        NetTree.DistributeNet(NetTree.Root, nets);
-                    }
-                    ParseNetTree(NetTree.Root);
-                }
-                catch (CannotDistributeNetsException ex)
-                {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                catch (ArgumentException ex)
-                {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
-        private void ClearBtnClick(object sender, EventArgs e)
-        {
-            NetTree = null;
-            NetTreeView.Nodes.Clear();
-            NetListDataGridView.Rows.Clear();
         }
 
         private void NetsGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -154,16 +124,129 @@ namespace IPCalculator
                 NetsGrid.Rows.RemoveAt(e.RowIndex);
             }
         }
-        #endregion
 
-        #region SummaryTable
-        private void AddNetSummary(int netid, Net net)
+        /// <summary>
+        /// Populate NetsGrid with an array of netsegments, ignoring it's indexes
+        /// </summary>
+        /// <param name="nets"></param>
+        private void PopulateNetsGrid(NetSegment[] nets)
         {
-
+            NetsGrid.Rows.Clear();   
+            if (nets.Length != 0)        //ignore old net id here and just fill as it is
+            {
+                NetsGrid.RowCount = nets.Length;
+                for (int i = 0; i < nets.Length; ++i)
+                {
+                    NetsGrid.Rows[i].Cells[0].Value = nets[i].HostAm;
+                    NetsGrid.Rows[i].Cells[1].Style.BackColor = System.Drawing.Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+                }
+            }
         }
         #endregion
 
+        #region DivideControlFunctions
+        private NetSegment[] GetSegmentsToDistribute()
+        {
+            NetSegment[] NewSegments = new NetSegment[NetsGrid.RowCount];
+            int key = 0;
+            for (int i = 0; i < NetsGrid.RowCount; ++i)
+            {
+                while (Segments.ContainsKey(key)) { key++; }  //if new segments contains already allocated netid, find first free id
+                NewSegments[i] = new NetSegment();
+                NewSegments[i].Color = NetsGrid.Rows[i].Cells[1].Style.BackColor;
+                NewSegments[i].Id = key;
+                NewSegments[i].HostAm = Convert.ToInt32(NetsGrid.Rows[i].Cells[0].Value);  //create segments
+                key++;
+            }
+            return NewSegments;
+
+        }
+
+        private void DivideBtn_Click(object sender, EventArgs e)
+        {
+            if (NetsGrid.RowCount != 0)
+            {
+                NetSegment[] SegmentsToAllocate = GetSegmentsToDistribute(); //get new segments from grid
+                try
+                {
+                    if (NetTreeView.SelectedNode != null)    //if some node in tree is selected, use it as root
+                    {
+                        NetTree.DistributeNet(NetTree.LocateNode(new Net(NetTreeView.SelectedNode.Text)), SegmentsToAllocate);
+                    }
+                    else
+                    {
+                        if (NetTree == null)   //if tree does not exist
+                        {
+                            NetTree = new NetTree(new Net(AddressBox.Text)); // create new tree and new root
+                        }
+                        NetTree.DistributeNet(NetTree.Root, SegmentsToAllocate);
+                    }
+                    //if operation successful, add new segments to allocated
+                    for (int i = 0; i < SegmentsToAllocate.Length; ++i)
+                    {
+                        Segments.Add(SegmentsToAllocate[i].Id, SegmentsToAllocate[i]);
+                    }
+                    ParseNetTree(NetTree.Root); //update UI controls
+                }
+                catch (CannotDistributeNetsException ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentException ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        #endregion
+
+        private void ClearBtnClick(object sender, EventArgs e)
+        {
+            NetTree = null;     //clear tree
+            ClearUI();
+            Segments.Clear();   //clear allocated net info
+        }
+
+        private void ClearUI()
+        {
+            NetTreeView.Nodes.Clear(); //clear view
+            NetListDataGridView.Rows.Clear();  //clear summary table
+        }
+
+        #endregion
+
+        #region RightPanel
+
+        #region UI Update Functions
+
         #region TreeView
+        private void ParseNodeState(ref TreeNode Node, NetTreeNode NodeToParse)
+        {
+            if (NodeToParse.State == State.Occupied)  //if current node is occupied
+            {
+                Node.BackColor = Segments[NodeToParse.OccupyId].Color;  //set style of the node
+                AddNetSummary(NodeToParse.OccupyId, NodeToParse.Net);   //add node info to summary
+            }
+            if (NodeToParse.State == State.Leaf)
+            {
+                Node.BackColor = System.Drawing.Color.Red;
+            }
+            if (NodeToParse.State == State.Free)
+            {
+                Node.BackColor = System.Drawing.Color.White;
+            }
+        }
+
+        private void ParseNetTree(NetTreeNode Root)
+        {
+            ClearUI();
+            TreeNode Node = new TreeNode(Root.Net.ToString());  //create treeview root
+            NetTreeView.Nodes.Add(Node);
+            ParseNodeState(ref Node, Root);   //parse node state
+            AttachSubNodes(ref Node, Root);   //recursively attach subnodes
+            NetTreeView.ExpandAll();
+        }
+
         private void AttachSubNodes(ref TreeNode Node, NetTreeNode NodeToAdd)
         {
             if (NodeToAdd.Left != null)
@@ -176,25 +259,6 @@ namespace IPCalculator
             }
         }
 
-        private void ParseNodeState(ref TreeNode Node, NetTreeNode NodeToParse)
-        {
-            if (NodeToParse.State == State.Occupied)
-            {
-                Node.BackColor = NetsGrid.Rows[NodeToParse.OccupyId].Cells[1].Style.BackColor;
-                AddNetSummary(NodeToParse.OccupyId, NodeToParse.Net);
-            }
-            if (NodeToParse.State == State.Leaf)
-            {
-                Node.BackColor = System.Drawing.Color.Red;
-            }
-        }
-        private void ParseNetTree(NetTreeNode Root)
-        {
-            TreeNode Node = new TreeNode(Root.Net.ToString());
-            ParseNodeState(ref Node, Root);
-            AttachSubNodes(ref Node, Root);
-        }
-
         private void AddNode(ref TreeNode Parent, NetTreeNode NodeToAdd)
         {
             TreeNode Node = new TreeNode(NodeToAdd.Net.ToString());
@@ -203,25 +267,63 @@ namespace IPCalculator
             Parent.Nodes.Add(Node);
         }
 
-        private void PopulateNetsGrid(int[] nets)
+        private void NetTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            NetsGrid.Rows.Clear();
-            if (nets.Length != 0)
+            ShowNetInfo(new Net(e.Node.Text));
+        }
+
+
+        #endregion
+
+        #region SummaryTable
+        /// <summary>
+        /// Adds information about the net into the summary table
+        /// </summary>
+        /// <param name="netid">Id of the net</param>
+        /// <param name="net">Net to add</param>
+        private void AddNetSummary(int netid, Net net)
+        {
+            NetListDataGridView.RowCount += 1;
+            int index = NetListDataGridView.RowCount - 1;
+            NetListDataGridView.Rows[index].Cells[0].Value = netid;
+            NetListDataGridView.Rows[index].Cells[1].Value = net.Address.ToString();
+            NetListDataGridView.Rows[index].Cells[2].Value = net.StartAddress.ToString();
+            NetListDataGridView.Rows[index].Cells[3].Value = net.EndAddress.ToString();
+            NetListDataGridView.Rows[index].Cells[4].Value = net.BroadcastAddress.ToString();
+            NetListDataGridView.Rows[index].Cells[5].Value = net.FullMask.ToString();
+            NetListDataGridView.Rows[index].Cells[6].Value = net.HostAm.ToString();
+            NetListDataGridView.Rows[index].Cells[7].Value = Segments[netid].HostAm;
+            NetListDataGridView.Rows[index].Cells[8].Value = net.HostAm - Segments[netid].HostAm;
+            NetListDataGridView.Sort(NetListDataGridView.Columns[0], System.ComponentModel.ListSortDirection.Ascending); // sort all summary by netid
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Treeview Context menu
+
+        /// <summary>
+        /// Aggregates nets from tree node and removes them from UI controls
+        /// </summary>
+        /// <returns>An array of aggregated nets</returns>
+        private NetSegment[] AggregateNodes()
+        {
+            NetTreeNode Node = NetTree.LocateNode(new Net(NetTreeView.SelectedNode.Text));
+            NetSegment[] AggregatedNets = NetTree.AggregateNode(Node);  //get aggregated nodes
+            for (int i = 0; i < AggregatedNets.Length; ++i) //for each net
             {
-                NetsGrid.RowCount = nets.Length;
-                for (int i = 0; i < nets.Length; ++i)
-                {
-                    NetsGrid.Rows[i].Cells[0].Value = nets[i];
-                }
+                Segments.Remove(AggregatedNets[i].Id); // delete net from allocated nets
             }
+            ParseNetTree(NetTree.Root);
+            return AggregatedNets;
         }
 
         private void AggregateMenuItem_Click(object sender, EventArgs e)
         {
             try
-            {
-                NetTreeNode Node = NetTree.LocateNode(NetTree.Root, new Net(NetTreeView.SelectedNode.Text));
-                PopulateNetsGrid(NetTree.AggregateNode(Node));
+            {               
+                PopulateNetsGrid(AggregateNodes());
             }
             catch (CannotAggregateNetsException ex)
             {
@@ -235,16 +337,26 @@ namespace IPCalculator
 
         private void ClearMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            try  //to clear node we just aggregate node and dont populate found nets
             {
-                NetTreeNode Node = NetTree.LocateNode(NetTree.Root, new Net(NetTreeView.SelectedNode.Text));
-                NetTree.ClearNode(Node);
+                AggregateNodes();
+            }
+            catch (CannotAggregateNetsException ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (NodeNotFoundException)
             {
                 MessageBox.Show("Дерево было изменено вне программы и имеет неверный формат", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+
+
+
+        #endregion
+
         #endregion
 
 

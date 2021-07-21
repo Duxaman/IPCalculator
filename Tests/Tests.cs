@@ -1,5 +1,5 @@
-using NUnit.Framework;
 using IPCalculator;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -60,8 +60,38 @@ namespace Tests
                 new Address(testcase);
                 Assert.Fail();
             }
-            catch(System.Exception)
+            catch (System.Exception)
             { }
+        }
+        [Test]
+        [TestCase("192.134.54.40", ExpectedResult = 3230021160)]
+        public uint GetRawIntReturnsCorrectValue(string testcase)
+        {
+            Address addr = new Address(testcase);
+            return addr.RawInt;
+        }
+        [Test]
+        [TestCase(3230021160)]
+        public void CreateAddressFromRawIntCreatesCorrectAddress(uint testcase)
+        {
+            try
+            {
+                Address address = new Address(testcase);
+                Assert.IsTrue(address == new Address("192.134.54.40"));
+            }
+            catch (System.Exception)
+            {
+
+                Assert.Fail();
+            }
+        }
+        [Test]
+        [TestCase("192.168.1.0", 25, ExpectedResult = "192.168.1.128")]
+        [TestCase("192.168.168.252", 31, ExpectedResult = "192.168.168.254")]
+        [TestCase("196.168.168.252", 6, ExpectedResult = "192.168.168.252")]
+        public string AddressInvertBitReturnsCorrectResult(string testcase, int position)
+        {
+            return Address.InvertBit(new Address(testcase), position).ToString();
         }
     }
     [TestFixture]

@@ -58,6 +58,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Net.cs" />
+    <Compile Include="NetSegment.cs" />
     <Compile Include="NetTree.cs" />
     <Compile Include="NetTreeNode.cs" />
     <Compile Include="Program.cs" />
