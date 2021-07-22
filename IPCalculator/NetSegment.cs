@@ -11,5 +11,6 @@ namespace IPCalculator
         public int Id;
         public System.Drawing.Color Color;
         public int HostAm;
+        public Net AssignedNet;
     }
 }

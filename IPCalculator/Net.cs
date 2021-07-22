@@ -97,6 +97,10 @@ namespace IPCalculator
         {
             if (obj == null) return false;
             Net net = obj as Net;
+            if (net == null)
+            {
+                return false;
+            }
             if (this.Address.Equals(net.Address) && this.Mask == net.Mask) return true;
             else return false;
         }

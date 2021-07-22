@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IPCalculator
 {
@@ -19,7 +19,9 @@ namespace IPCalculator
             UInt32 address = NodeToLocate.Address.RawInt;
             //shift all net part bits
             address <<= Root.Net.Mask;
-            for (int i = 0; i < NodeToLocate.Mask - Root.Net.Mask; ++i)   //first remaining (needed mask - rootmask) bits is the path to the node in the tree
+            int BitsToMove = NodeToLocate.Mask - Root.Net.Mask;
+            if (BitsToMove < 0) throw new NodeNotFoundException("Текущее поддерево не содержит искомого узла");
+            for (int i = 0; i < BitsToMove; ++i)   //first remaining (needed mask - rootmask) bits is the path to the node in the tree
             {
                 if (address >> 31 == 0)
                 {
@@ -58,7 +60,7 @@ namespace IPCalculator
             Root = rootnode;
         }
 
-        private void AllocateNode(ref NetTreeNode Node, NetSegment Segment)
+        private void AllocateNode(ref NetTreeNode Node, ref NetSegment Segment)
         {
             if (Node.Left != null)
             {
@@ -67,6 +69,7 @@ namespace IPCalculator
             }
             Node.State = State.Occupied;
             Node.OccupyId = Segment.Id;
+            Segment.AssignedNet = Node.Net;
         }
 
         private void CreateChildren(ref NetTreeNode Node)
@@ -86,11 +89,17 @@ namespace IPCalculator
                 catch (ArgumentException)
                 {
                     //cant divide more
-                } 
+                }
             }
         }
 
-        private void FindSmallestNode(NetTreeNode CurNode, NetSegment Segment, ref bool finished)
+        /// <summary>
+        /// Tries to allocate NetSegment into smallest possible node of NetTree with root CurNode
+        /// </summary>
+        /// <param name="CurNode">Current Node of the NetTree</param>
+        /// <param name="Segment">Segment to Allocate</param>
+        /// <param name="finished">Flag signalizing that segment has been allocated</param>
+        private void AllocateToSmallestNode(NetTreeNode CurNode, ref NetSegment Segment, ref bool finished)
         {
             if (!finished)
             {
@@ -101,7 +110,7 @@ namespace IPCalculator
                         if (CurNode.Parent != null)  //if parent exist go back to parent
                         {
                             CurNode = CurNode.Parent;
-                            AllocateNode(ref CurNode, Segment);
+                            AllocateNode(ref CurNode, ref Segment);
                             finished = true;              //mark that we should exit all recursion levels
                             return;
                         }
@@ -115,55 +124,62 @@ namespace IPCalculator
                         CreateChildren(ref CurNode);
                         if (CurNode.Left != null)
                         {
-                            FindSmallestNode(CurNode.Left, Segment, ref finished);
-                            FindSmallestNode(CurNode.Right, Segment, ref finished);
+                            AllocateToSmallestNode(CurNode.Left, ref Segment, ref finished);
+                            AllocateToSmallestNode(CurNode.Right, ref Segment, ref finished);
                         }
                         else
                         {
-                            AllocateNode(ref CurNode, Segment);
+                            AllocateNode(ref CurNode, ref Segment);
                             finished = true;
                             return;
                         }
                     }
-                } 
+                }
             }
 
         }
-
         private void FindNets(NetTreeNode Node, ref List<NetSegment> Segments)
         {
-            if(Node.State == State.Occupied)
+            if (Node.State == State.Occupied)
             {
-                NetSegment Net = new NetSegment();
+                Node.State = State.Free;   //free node (in case if its root node)
+                Node.OccupyId = -1;
+                if (Node.Left != null)
+                {
+                    Node.Left.Parent = null;           //remove references to leaves
+                    Node.Left = null;
+                    Node.Right.Parent = null;
+                    Node.Right = null;
+                }
+                NetSegment Net = new NetSegment(); //create net segment
                 Net.Id = Node.OccupyId;
                 Net.HostAm = Node.Net.HostAm;
                 Segments.Add(Net);
             }
-            if(Node.Left != null)
+            else if (Node.Left != null)  //if node is free
             {
-                FindNets(Node.Left, ref Segments);
-                Node.Left.Parent = null;
+                FindNets(Node.Left, ref Segments); //check left subtree
+                Node.Left.Parent = null;           //remove references
                 Node.Left = null;
-                FindNets(Node.Right, ref Segments);
-                Node.Right.Parent = null;
+                FindNets(Node.Right, ref Segments);//check right subtree
+                Node.Right.Parent = null;          //remove references
                 Node.Right = null;
             }
         }
-
-
         /// <summary>
         /// Distributes specified nets from NetSegment array inside provided node
         /// </summary>
         /// <param name="rootnode"></param>
         /// <param name="SegmentsToAllocate"></param>
-        public void DistributeNet(NetTreeNode rootnode, NetSegment[] SegmentsToAllocate)
+        public void DistributeNet(NetTreeNode rootnode, ref NetSegment[] SegmentsToAllocate)
         {
             if (SegmentsToAllocate.Length == 0) throw new CannotDistributeNetsException("Массив сетей пуст");
             NetSegment[] SortedNets = SegmentsToAllocate.OrderByDescending(x => x.HostAm).ToArray();
             for (int i = 0; i < SortedNets.Length; ++i)
             {
                 bool finishmark = false;
-                FindSmallestNode(rootnode, SortedNets[i], ref finishmark);
+                AllocateToSmallestNode(rootnode, ref SortedNets[i], ref finishmark);
+                if (!finishmark) throw new CannotDistributeNetsException("В данном узле нет места для всех необходимых сетей");
             }
         }
         /// <summary>
@@ -173,9 +189,16 @@ namespace IPCalculator
         /// <returns>Netsegment array of the nets, that were previously allocated in this node</returns>
         public NetSegment[] AggregateNode(NetTreeNode node)
         {
-            List<NetSegment> Segments = new List<NetSegment>();
-            FindNets(node, ref Segments);
-            return Segments.ToArray();
+            if (node.State != State.Leaf)
+            {
+                List<NetSegment> Segments = new List<NetSegment>();
+                FindNets(node, ref Segments);
+                return Segments.ToArray();
+            }
+            else
+            {
+                throw new CannotAggregateNetsException("Невозможно аггрегировать узел который является листом"); //TODO:
+            }
         }
 
     }

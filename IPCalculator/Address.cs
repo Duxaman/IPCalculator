@@ -126,6 +126,10 @@ namespace IPCalculator
         {
             if (obj == null) return false;
             Address add = obj as Address;
+            if (add is null)
+            {
+                return false;
+            }
             if (this == add) return true;
             else return false;
         }

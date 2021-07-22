@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace IPCalculator
 {
@@ -22,13 +22,13 @@ namespace IPCalculator
         {
             if (OpenNetTreeDialog.ShowDialog() == DialogResult.OK)
             {
-                string JsonText = File.ReadAllText(OpenNetTreeDialog.FileName); 
+                string JsonText = File.ReadAllText(OpenNetTreeDialog.FileName);
                 try
                 {
                     dynamic Object = JsonConvert.DeserializeObject<dynamic>(JsonText);  //read allocated segments and tree
                     Segments = Object[0];
                     NetTree = Object[1];
-                    ParseNetTree(NetTree.Root);   //update Tree and summary
+                    CreateTreeView(NetTree.Root);   //update Tree and summary
                 }
                 catch (Exception ex)
                 {
@@ -131,7 +131,7 @@ namespace IPCalculator
         /// <param name="nets"></param>
         private void PopulateNetsGrid(NetSegment[] nets)
         {
-            NetsGrid.Rows.Clear();   
+            NetsGrid.Rows.Clear();
             if (nets.Length != 0)        //ignore old net id here and just fill as it is
             {
                 NetsGrid.RowCount = nets.Length;
@@ -171,7 +171,7 @@ namespace IPCalculator
                 {
                     if (NetTreeView.SelectedNode != null)    //if some node in tree is selected, use it as root
                     {
-                        NetTree.DistributeNet(NetTree.LocateNode(new Net(NetTreeView.SelectedNode.Text)), SegmentsToAllocate);
+                        NetTree.DistributeNet(NetTree.LocateNode(new Net(NetTreeView.SelectedNode.Text)), ref SegmentsToAllocate);
                     }
                     else
                     {
@@ -179,17 +179,20 @@ namespace IPCalculator
                         {
                             NetTree = new NetTree(new Net(AddressBox.Text)); // create new tree and new root
                         }
-                        NetTree.DistributeNet(NetTree.Root, SegmentsToAllocate);
+                        NetTree.DistributeNet(NetTree.Root, ref SegmentsToAllocate);
                     }
                     //if operation successful, add new segments to allocated
                     for (int i = 0; i < SegmentsToAllocate.Length; ++i)
                     {
                         Segments.Add(SegmentsToAllocate[i].Id, SegmentsToAllocate[i]);
                     }
-                    ParseNetTree(NetTree.Root); //update UI controls
+                    CreateTreeView(NetTree.Root); //update tree UI
+                    UpdateSummaryTable(); //print all allocated segments to user
+
                 }
                 catch (CannotDistributeNetsException ex)
                 {
+                    ClearData();
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (ArgumentException ex)
@@ -200,18 +203,19 @@ namespace IPCalculator
         }
         #endregion
 
-        private void ClearBtnClick(object sender, EventArgs e)
+        private void ClearData()
         {
             NetTree = null;     //clear tree
-            ClearUI();
+            NetTreeView.Nodes.Clear(); //clear treeview
             Segments.Clear();   //clear allocated net info
+            NetListDataGridView.Rows.Clear();
         }
 
-        private void ClearUI()
+        private void ClearBtnClick(object sender, EventArgs e)
         {
-            NetTreeView.Nodes.Clear(); //clear view
-            NetListDataGridView.Rows.Clear();  //clear summary table
+            ClearData();
         }
+
 
         #endregion
 
@@ -225,7 +229,6 @@ namespace IPCalculator
             if (NodeToParse.State == State.Occupied)  //if current node is occupied
             {
                 Node.BackColor = Segments[NodeToParse.OccupyId].Color;  //set style of the node
-                AddNetSummary(NodeToParse.OccupyId, NodeToParse.Net);   //add node info to summary
             }
             if (NodeToParse.State == State.Leaf)
             {
@@ -237,71 +240,85 @@ namespace IPCalculator
             }
         }
 
-        private void ParseNetTree(NetTreeNode Root)
+        private void CreateTreeView(NetTreeNode Root)
         {
-            ClearUI();
+            NetTreeView.Nodes.Clear();
             TreeNode Node = new TreeNode(Root.Net.ToString());  //create treeview root
             NetTreeView.Nodes.Add(Node);
-            ParseNodeState(ref Node, Root);   //parse node state
+            ParseNodeState(ref Node, Root);   //set node style
             AttachSubNodes(ref Node, Root);   //recursively attach subnodes
             NetTreeView.ExpandAll();
         }
 
-        private void AttachSubNodes(ref TreeNode Node, NetTreeNode NodeToAdd)
+        /// <summary>
+        /// Creates and attaches TreeViewNode representaions of NetTreeNodeToParse children to TreeViewParent 
+        /// </summary>
+        /// <param name="TreeViewParent">Treeview parent node</param>
+        /// <param name="NetTreeNodeToParse">NetTreeNode which children should be added to the parent</param>
+        private void AttachSubNodes(ref TreeNode TreeViewParent, NetTreeNode NetTreeNodeToParse)
         {
-            if (NodeToAdd.Left != null)
+            if (NetTreeNodeToParse.Left != null) //if left subtree exists
             {
-                AddNode(ref Node, NodeToAdd.Left);
+                TreeNode LeftNode = AddNode(NetTreeNodeToParse.Left);  //create treeview node for left NetTreeNode
+                TreeViewParent.Nodes.Add(LeftNode);                    //attach it to parent
+                AttachSubNodes(ref LeftNode, NetTreeNodeToParse.Left); //call this function for left subtree
             }
-            if (NodeToAdd.Right != null)
+            if (NetTreeNodeToParse.Right != null)
             {
-                AddNode(ref Node, NodeToAdd.Right);
+                TreeNode RightNode = AddNode(NetTreeNodeToParse.Right); //the same way for right subtree
+                TreeViewParent.Nodes.Add(RightNode);
+                AttachSubNodes(ref RightNode, NetTreeNodeToParse.Right);
             }
         }
 
-        private void AddNode(ref TreeNode Parent, NetTreeNode NodeToAdd)
+        /// <summary>
+        /// Creates new TreeView node from NetTreeNode
+        /// </summary>
+        /// <param name="Parent">TreeView parent node</param>
+        /// <param name="NodeToAdd">NetTree node from which new TreeView node will be created</param>
+        /// <returns></returns>
+        private TreeNode AddNode(NetTreeNode NodeToAdd)
         {
             TreeNode Node = new TreeNode(NodeToAdd.Net.ToString());
-            ParseNodeState(ref Node, NodeToAdd);
-            AttachSubNodes(ref Node, NodeToAdd);
-            Parent.Nodes.Add(Node);
+            ParseNodeState(ref Node, NodeToAdd); //set node style
+            return Node;
         }
-
-        private void NetTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            ShowNetInfo(new Net(e.Node.Text));
-        }
-
 
         #endregion
 
         #region SummaryTable
+
         /// <summary>
-        /// Adds information about the net into the summary table
+        /// Update UI to show all members of Segments Dictionary
         /// </summary>
-        /// <param name="netid">Id of the net</param>
-        /// <param name="net">Net to add</param>
-        private void AddNetSummary(int netid, Net net)
+        private void UpdateSummaryTable()
         {
-            NetListDataGridView.RowCount += 1;
-            int index = NetListDataGridView.RowCount - 1;
-            NetListDataGridView.Rows[index].Cells[0].Value = netid;
-            NetListDataGridView.Rows[index].Cells[1].Value = net.Address.ToString();
-            NetListDataGridView.Rows[index].Cells[2].Value = net.StartAddress.ToString();
-            NetListDataGridView.Rows[index].Cells[3].Value = net.EndAddress.ToString();
-            NetListDataGridView.Rows[index].Cells[4].Value = net.BroadcastAddress.ToString();
-            NetListDataGridView.Rows[index].Cells[5].Value = net.FullMask.ToString();
-            NetListDataGridView.Rows[index].Cells[6].Value = net.HostAm.ToString();
-            NetListDataGridView.Rows[index].Cells[7].Value = Segments[netid].HostAm;
-            NetListDataGridView.Rows[index].Cells[8].Value = net.HostAm - Segments[netid].HostAm;
+            NetListDataGridView.Rows.Clear();
+            int index = 0;
+            foreach (KeyValuePair<int, NetSegment> element in Segments)
+            {
+                NetListDataGridView.RowCount += 1;
+                NetListDataGridView.Rows[index].Cells[0].Value = element.Value.Id;
+                NetListDataGridView.Rows[index].Cells[0].Style.BackColor = element.Value.Color;
+                NetListDataGridView.Rows[index].Cells[1].Value = element.Value.AssignedNet.Address.ToString();
+                NetListDataGridView.Rows[index].Cells[2].Value = element.Value.AssignedNet.StartAddress.ToString();
+                NetListDataGridView.Rows[index].Cells[3].Value = element.Value.AssignedNet.EndAddress.ToString();
+                NetListDataGridView.Rows[index].Cells[4].Value = element.Value.AssignedNet.BroadcastAddress.ToString();
+                NetListDataGridView.Rows[index].Cells[5].Value = element.Value.AssignedNet.FullMask.ToString() + " (" + element.Value.AssignedNet.Mask.ToString() + ")";
+                NetListDataGridView.Rows[index].Cells[6].Value = element.Value.AssignedNet.HostAm.ToString();
+                NetListDataGridView.Rows[index].Cells[7].Value = element.Value.HostAm;
+                NetListDataGridView.Rows[index].Cells[8].Value = element.Value.AssignedNet.HostAm - element.Value.HostAm;
+                index++;
+            }
             NetListDataGridView.Sort(NetListDataGridView.Columns[0], System.ComponentModel.ListSortDirection.Ascending); // sort all summary by netid
+            NetListDataGridView.ClearSelection();
         }
 
         #endregion
 
         #endregion
 
-        #region Treeview Context menu
+        #region Treeview Context menu and Mouse events
 
         /// <summary>
         /// Aggregates nets from tree node and removes them from UI controls
@@ -315,14 +332,14 @@ namespace IPCalculator
             {
                 Segments.Remove(AggregatedNets[i].Id); // delete net from allocated nets
             }
-            ParseNetTree(NetTree.Root);
+            CreateTreeView(NetTree.Root);
             return AggregatedNets;
         }
 
         private void AggregateMenuItem_Click(object sender, EventArgs e)
         {
             try
-            {               
+            {
                 PopulateNetsGrid(AggregateNodes());
             }
             catch (CannotAggregateNetsException ex)
@@ -349,6 +366,12 @@ namespace IPCalculator
             {
                 MessageBox.Show("Дерево было изменено вне программы и имеет неверный формат", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void NetTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            NetTreeView.SelectedNode = e.Node;
+            ShowNetInfo(new Net(e.Node.Text));
         }
 
 
