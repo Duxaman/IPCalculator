@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace IPCalculator
 {
+    [JsonObject]
     sealed public class NetTree
     {
+        [JsonProperty]
         public NetTreeNode Root { get; private set; }
 
         /// <summary>
@@ -55,9 +58,10 @@ namespace IPCalculator
             Root = new NetTreeNode(RootNet);
         }
 
-        public NetTree(NetTreeNode rootnode)
+        [JsonConstructor]
+        public NetTree(NetTreeNode Root)
         {
-            Root = rootnode;
+            this.Root = Root;
         }
 
         private void AllocateNode(ref NetTreeNode Node, ref NetSegment Segment)
@@ -82,9 +86,7 @@ namespace IPCalculator
                     Address RightChildAddress = Address.InvertBit(Node.Net.Address, Node.Net.Mask + 1);
                     Net RightChild = new Net(RightChildAddress, Node.Net.Mask + 1);
                     Node.Left = new NetTreeNode(LeftChild);
-                    Node.Left.Parent = Node;
                     Node.Right = new NetTreeNode(RightChild);
-                    Node.Right.Parent = Node;
                 }
                 catch (ArgumentException)
                 {
@@ -105,34 +107,41 @@ namespace IPCalculator
             {
                 if (CurNode.State == State.Free) //if current node is free
                 {
-                    if (CurNode.Net.HostAm < Segment.HostAm) //if current node does not have enought hosts
+                    if (CurNode.Net.HostAm < Segment.HostAm) //if in curent have not enought place then there is no place in subnodes eather
                     {
-                        if (CurNode.Parent != null)  //if parent exist go back to parent
+                        throw new CannotDistributeNetsException("Невозможно распределить сеть с " + Segment.HostAm + " хостами, наибольший узел может вместить лишь " + CurNode.Net.HostAm + " хостов");
+                    }
+                    CreateChildren(ref CurNode); //try to create children
+                    if (CurNode.Left != null)
+                    {
+                        //if children exist
+                        if (CurNode.Left.State == State.Free)
                         {
-                            CurNode = CurNode.Parent;
-                            AllocateNode(ref CurNode, ref Segment);
-                            finished = true;              //mark that we should exit all recursion levels
-                            return;
+                            if (CurNode.Left.Net.HostAm < Segment.HostAm) //if left node does not have enought hosts
+                            {
+                                AllocateNode(ref CurNode, ref Segment);
+                                finished = true;              //mark that we should exit all recursion levels
+                                return;
+                            }
                         }
-                        else
+                        if (CurNode.Right.State == State.Free)
                         {
-                            throw new CannotDistributeNetsException("Невозможно распределить сеть с " + Segment.HostAm + " хостами, наибольший узел может вместить лишь " + CurNode.Net.HostAm + " хостов");
+                            if (CurNode.Right.Net.HostAm < Segment.HostAm) //if right node does not have enought hosts
+                            {
+                                AllocateNode(ref CurNode, ref Segment);
+                                finished = true;              //mark that we should exit all recursion levels
+                                return;
+                            }
                         }
+                        AllocateToSmallestNode(CurNode.Left, ref Segment, ref finished);
+                        AllocateToSmallestNode(CurNode.Right, ref Segment, ref finished);
                     }
                     else
                     {
-                        CreateChildren(ref CurNode);
-                        if (CurNode.Left != null)
-                        {
-                            AllocateToSmallestNode(CurNode.Left, ref Segment, ref finished);
-                            AllocateToSmallestNode(CurNode.Right, ref Segment, ref finished);
-                        }
-                        else
-                        {
-                            AllocateNode(ref CurNode, ref Segment);
-                            finished = true;
-                            return;
-                        }
+                        AllocateNode(ref CurNode, ref Segment);
+                        finished = true;
+                        return;
+
                     }
                 }
             }
@@ -146,9 +155,7 @@ namespace IPCalculator
                 Node.OccupyId = -1;
                 if (Node.Left != null)
                 {
-                    Node.Left.Parent = null;           //remove references to leaves
                     Node.Left = null;
-                    Node.Right.Parent = null;
                     Node.Right = null;
                 }
                 NetSegment Net = new NetSegment(); //create net segment
@@ -159,10 +166,8 @@ namespace IPCalculator
             else if (Node.Left != null)  //if node is free
             {
                 FindNets(Node.Left, ref Segments); //check left subtree
-                Node.Left.Parent = null;           //remove references
                 Node.Left = null;
                 FindNets(Node.Right, ref Segments);//check right subtree
-                Node.Right.Parent = null;          //remove references
                 Node.Right = null;
             }
         }

@@ -1,10 +1,15 @@
 ﻿using System;
+using Newtonsoft.Json;
 namespace IPCalculator
 {
+    [JsonObject]
     sealed public class Net
     {
+        [JsonProperty]
         public Address Address { get; private set; }
+        [JsonProperty]
         public int Mask { get; private set; }
+        [JsonIgnore]
         public Address FullMask
         {
             get
@@ -24,6 +29,7 @@ namespace IPCalculator
                 return FullMask;
             }
         }
+        [JsonIgnore]
         public Address StartAddress
         {
             get
@@ -33,6 +39,7 @@ namespace IPCalculator
                 return Min;
             }
         }
+        [JsonIgnore]
         public Address EndAddress
         {
             get
@@ -42,6 +49,7 @@ namespace IPCalculator
                 return Max;
             }
         }
+        [JsonIgnore]
         public Address BroadcastAddress
         {
             get
@@ -49,6 +57,7 @@ namespace IPCalculator
                 return Address | Wildcard;
             }
         }
+        [JsonIgnore]
         public Address Wildcard
         {
             get
@@ -56,6 +65,7 @@ namespace IPCalculator
                 return ~FullMask;
             }
         }
+        [JsonIgnore]
         public int HostAm
         {
             get
@@ -63,11 +73,12 @@ namespace IPCalculator
                 return (int)Math.Pow(2, 32 - Mask) - 2;
             }
         }
-        public Net(Address address, int mask)
+        [JsonConstructor]
+        public Net(Address Address, int Mask)
         {
-            if(mask < 0 || mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
-            Address = address;
-            Mask = mask;
+            if(Mask < 0 || Mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
+            this.Address = Address;
+            this.Mask = Mask;
             Address = Address & FullMask; //in case input is not the net address
         }
         public Net(string net)

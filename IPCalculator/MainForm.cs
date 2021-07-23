@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace IPCalculator
 {
@@ -23,12 +24,14 @@ namespace IPCalculator
             if (OpenNetTreeDialog.ShowDialog() == DialogResult.OK)
             {
                 string JsonText = File.ReadAllText(OpenNetTreeDialog.FileName);
+                ClearData();
                 try
                 {
-                    dynamic Object = JsonConvert.DeserializeObject<dynamic>(JsonText);  //read allocated segments and tree
-                    Segments = Object[0];
-                    NetTree = Object[1];
+                    SaveData Data = JsonConvert.DeserializeObject<SaveData>(JsonText);
+                    Segments = Data.Segments;
+                    NetTree = Data.NetTree;
                     CreateTreeView(NetTree.Root);   //update Tree and summary
+                    UpdateSummaryTable();
                 }
                 catch (Exception ex)
                 {
@@ -44,7 +47,11 @@ namespace IPCalculator
                 if (SaveNetTreeDialog.ShowDialog() == DialogResult.OK)
                 {
                     //save tree and color info
-                    File.WriteAllText(SaveNetTreeDialog.FileName, JsonConvert.SerializeObject(new { Segments, NetTree }));
+                    SaveData Data = new SaveData();
+                    Data.Segments = Segments;
+                    Data.NetTree = NetTree;
+                    File.WriteAllText(SaveNetTreeDialog.FileName, JsonConvert.SerializeObject(Data));
+                    MessageBox.Show("Текущее дерево сетей сохранено");
                 }
             }
             else
@@ -378,10 +385,10 @@ namespace IPCalculator
 
 
 
-        #endregion
 
         #endregion
 
+        #endregion
 
     }
 }

@@ -1,12 +1,14 @@
-﻿using System;
-using System.Linq;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace IPCalculator
 {
+    [JsonObject]
     sealed public class Address
     {
+        [JsonIgnore]
         private byte[] Bytes;
-
+        [JsonIgnore]
         public UInt32 RawInt
         {
             get
@@ -19,10 +21,18 @@ namespace IPCalculator
                 RawInt += Bytes[2];
                 RawInt <<= 8;
                 RawInt += Bytes[3];
-                return RawInt; 
+                return RawInt;
             }
         }
 
+        [JsonProperty]
+        public string AddressString
+        {
+            get
+            {
+                return ToString();
+            }
+        }
         public Address(UInt32 Address)
         {
             Bytes = new byte[4];
@@ -39,15 +49,17 @@ namespace IPCalculator
         {
             Bytes = new byte[4];
         }
+
         public Address(Address add)
         {
             Bytes = new byte[] { add.Bytes[0], add.Bytes[1], add.Bytes[2], add.Bytes[3] };
         }
-        public Address(string address)
+        [JsonConstructor]
+        public Address(string AddressString)
         {
             try
             {
-                string[] Elements = address.Trim().Split('.');
+                string[] Elements = AddressString.Trim().Split('.');
                 if (Elements.Length != 4) throw new ArgumentException("Недопустимый формат адреса"); //TODO: language
                 else
                 {

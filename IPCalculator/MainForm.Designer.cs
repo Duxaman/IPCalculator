@@ -41,6 +41,15 @@
             this.AggregateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ClearMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.NetListDataGridView = new System.Windows.Forms.DataGridView();
+            this.IdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.StartAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EndAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BroadcastAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SubnetMask = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TotalHosts = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Occupied = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Free = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LeftPanel = new System.Windows.Forms.TableLayoutPanel();
             this.RootAddressBox = new System.Windows.Forms.GroupBox();
             this.InfoBtn = new System.Windows.Forms.Button();
@@ -73,15 +82,6 @@
             this.ColorPicker = new System.Windows.Forms.ColorDialog();
             this.SaveNetTreeDialog = new System.Windows.Forms.SaveFileDialog();
             this.OpenNetTreeDialog = new System.Windows.Forms.OpenFileDialog();
-            this.IdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.StartAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BroadcastAddress = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SubnetMask = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TotalHosts = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Occupied = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Free = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MainMenuStrip.SuspendLayout();
             this.MainGrid.SuspendLayout();
             this.RightPanel.SuspendLayout();
@@ -187,6 +187,70 @@
             resources.ApplyResources(this.NetListDataGridView, "NetListDataGridView");
             this.NetListDataGridView.Name = "NetListDataGridView";
             this.NetListDataGridView.RowHeadersVisible = false;
+            this.NetListDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            // 
+            // IdColumn
+            // 
+            this.IdColumn.Frozen = true;
+            resources.ApplyResources(this.IdColumn, "IdColumn");
+            this.IdColumn.Name = "IdColumn";
+            this.IdColumn.ReadOnly = true;
+            // 
+            // Address
+            // 
+            this.Address.Frozen = true;
+            resources.ApplyResources(this.Address, "Address");
+            this.Address.Name = "Address";
+            this.Address.ReadOnly = true;
+            // 
+            // StartAddress
+            // 
+            this.StartAddress.Frozen = true;
+            resources.ApplyResources(this.StartAddress, "StartAddress");
+            this.StartAddress.Name = "StartAddress";
+            this.StartAddress.ReadOnly = true;
+            // 
+            // EndAddress
+            // 
+            this.EndAddress.Frozen = true;
+            resources.ApplyResources(this.EndAddress, "EndAddress");
+            this.EndAddress.Name = "EndAddress";
+            this.EndAddress.ReadOnly = true;
+            // 
+            // BroadcastAddress
+            // 
+            this.BroadcastAddress.Frozen = true;
+            resources.ApplyResources(this.BroadcastAddress, "BroadcastAddress");
+            this.BroadcastAddress.Name = "BroadcastAddress";
+            this.BroadcastAddress.ReadOnly = true;
+            // 
+            // SubnetMask
+            // 
+            this.SubnetMask.Frozen = true;
+            resources.ApplyResources(this.SubnetMask, "SubnetMask");
+            this.SubnetMask.Name = "SubnetMask";
+            this.SubnetMask.ReadOnly = true;
+            // 
+            // TotalHosts
+            // 
+            this.TotalHosts.Frozen = true;
+            resources.ApplyResources(this.TotalHosts, "TotalHosts");
+            this.TotalHosts.Name = "TotalHosts";
+            this.TotalHosts.ReadOnly = true;
+            // 
+            // Occupied
+            // 
+            this.Occupied.Frozen = true;
+            resources.ApplyResources(this.Occupied, "Occupied");
+            this.Occupied.Name = "Occupied";
+            this.Occupied.ReadOnly = true;
+            // 
+            // Free
+            // 
+            this.Free.Frozen = true;
+            resources.ApplyResources(this.Free, "Free");
+            this.Free.Name = "Free";
+            this.Free.ReadOnly = true;
             // 
             // LeftPanel
             // 
@@ -399,69 +463,6 @@
             // 
             this.OpenNetTreeDialog.DefaultExt = "json";
             resources.ApplyResources(this.OpenNetTreeDialog, "OpenNetTreeDialog");
-            // 
-            // IdColumn
-            // 
-            this.IdColumn.Frozen = true;
-            resources.ApplyResources(this.IdColumn, "IdColumn");
-            this.IdColumn.Name = "IdColumn";
-            this.IdColumn.ReadOnly = true;
-            // 
-            // Address
-            // 
-            this.Address.Frozen = true;
-            resources.ApplyResources(this.Address, "Address");
-            this.Address.Name = "Address";
-            this.Address.ReadOnly = true;
-            // 
-            // StartAddress
-            // 
-            this.StartAddress.Frozen = true;
-            resources.ApplyResources(this.StartAddress, "StartAddress");
-            this.StartAddress.Name = "StartAddress";
-            this.StartAddress.ReadOnly = true;
-            // 
-            // EndAddress
-            // 
-            this.EndAddress.Frozen = true;
-            resources.ApplyResources(this.EndAddress, "EndAddress");
-            this.EndAddress.Name = "EndAddress";
-            this.EndAddress.ReadOnly = true;
-            // 
-            // BroadcastAddress
-            // 
-            this.BroadcastAddress.Frozen = true;
-            resources.ApplyResources(this.BroadcastAddress, "BroadcastAddress");
-            this.BroadcastAddress.Name = "BroadcastAddress";
-            this.BroadcastAddress.ReadOnly = true;
-            // 
-            // SubnetMask
-            // 
-            this.SubnetMask.Frozen = true;
-            resources.ApplyResources(this.SubnetMask, "SubnetMask");
-            this.SubnetMask.Name = "SubnetMask";
-            this.SubnetMask.ReadOnly = true;
-            // 
-            // TotalHosts
-            // 
-            this.TotalHosts.Frozen = true;
-            resources.ApplyResources(this.TotalHosts, "TotalHosts");
-            this.TotalHosts.Name = "TotalHosts";
-            this.TotalHosts.ReadOnly = true;
-            // 
-            // Occupied
-            // 
-            this.Occupied.Frozen = true;
-            resources.ApplyResources(this.Occupied, "Occupied");
-            this.Occupied.Name = "Occupied";
-            this.Occupied.ReadOnly = true;
-            // 
-            // Free
-            // 
-            this.Free.Frozen = true;
-            resources.ApplyResources(this.Free, "Free");
-            this.Free.Name = "Free";
-            this.Free.ReadOnly = true;
             // 
             // MainForm
             // 

@@ -139,12 +139,8 @@ namespace Tests
             BottomRight.State = State.Leaf;
             TestRootLeft.State = State.Occupied;
             TestRootLeft.OccupyId = 0;
-            BottomLeft.Parent = TestRootLeft;
-            BottomRight.Parent = TestRootLeft;
             TestRootLeft.Left = BottomLeft;
             TestRootLeft.Right = BottomRight;
-            TestRootRight.Parent = TestRoot;
-            TestRootLeft.Parent = TestRoot;
             TestRoot.Left = TestRootLeft;
             TestRoot.Right = TestRootRight;
             return TestRoot;
