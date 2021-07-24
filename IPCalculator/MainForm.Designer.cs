@@ -180,7 +180,7 @@
             this.AggregateMenuItem,
             this.ClearMenuItem});
             this.TreeViewContextMenu.Name = "TreeViewContextMenu";
-            this.TreeViewContextMenu.Size = new System.Drawing.Size(181, 70);
+            this.TreeViewContextMenu.Size = new System.Drawing.Size(160, 48);
             // 
             // AggregateMenuItem
             // 
@@ -529,13 +529,13 @@
             // 
             this.SaveNetTreeDialog.DefaultExt = "json";
             this.SaveNetTreeDialog.Filter = "JSON files | *.json";
-            this.SaveNetTreeDialog.Title = "Сохранить дерево сетей";
+            this.SaveNetTreeDialog.Title = "Save net tree";
             // 
             // OpenNetTreeDialog
             // 
             this.OpenNetTreeDialog.DefaultExt = "json";
             this.OpenNetTreeDialog.Filter = "JSON Files | *.json";
-            this.OpenNetTreeDialog.Title = "Открыть дерево сетей";
+            this.OpenNetTreeDialog.Title = "Open net tree";
             // 
             // HostAm
             // 
