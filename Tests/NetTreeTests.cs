@@ -154,9 +154,16 @@ namespace Tests
         [TestCase("192.168.4.24/29")]
         public void LocateNodeReturnsCorrectNode(string testcase)
         {
-            NetTree TestTree = new NetTree(CreateTestTree());
-            NetTreeNode node = TestTree.LocateNode(new Net(testcase));
-            if (!node.Net.Equals(new Net(testcase)))
+            try
+            {
+                NetTree TestTree = new NetTree(CreateTestTree());
+                NetTreeNode node = TestTree.LocateNode(new Net(testcase));
+                if (!node.Net.Equals(new Net(testcase)))
+                {
+                    Assert.Fail();
+                }
+            }
+            catch (Exception)
             {
                 Assert.Fail();
             }
@@ -168,9 +175,9 @@ namespace Tests
         [TestCase("192.134.4.24/10")]
         public void LocateNodeThrowsNodeNotFoundExceptionWhenNodeNotFound(string testcase)
         {
-            NetTree TestTree = new NetTree(CreateTestTree());
             try
             {
+                NetTree TestTree = new NetTree(CreateTestTree());
                 NetTreeNode node = TestTree.LocateNode(new Net(testcase));
                 Assert.Fail();
 
@@ -226,10 +233,10 @@ namespace Tests
         [Test]
         public void DistributeNetThrowsExceptionWhenSegmentArrayIsEmpty()
         {
-            NetTree TestTree = new NetTree(new Net("192.168.13.44/12"));
             NetSegment[] netSegments = new NetSegment[] { };
             try
             {
+                NetTree TestTree = new NetTree(new Net("192.168.13.44/12"));
                 TestTree.DistributeNet(TestTree.Root, ref netSegments);
                 Assert.Fail();
             }
@@ -244,6 +251,45 @@ namespace Tests
 
         }
 
+        [Test]
+        public void AggregateNodeThrowsExceptionWhenTryAggregatingLeaf()
+        {
+            NetTreeNode Root = CreateTestTree();
+            try
+            {
+                NetTree netTree = new NetTree(Root);
+                netTree.AggregateNode(netTree.LocateNode(new Net("192.168.4.20/30")));
+                Assert.Fail();
+            }
+            catch(CannotAggregateNetsException)
+            {
+            }
+            catch(Exception)
+            {
+                Assert.Fail();
+            }
+        }
+        [Test]
+        public void AggregateNodeReturnCorrectSegmentsWhenNodeIsOccupied()
+        {
+            NetTreeNode Root = CreateTestTree();
+            try
+            {
+                NetTree netTree = new NetTree(Root);
+                NetSegment[] Segments =  netTree.AggregateNode(netTree.LocateNode(new Net("192.168.4.16/29")));
+                if(Segments.Length == 1)
+                {
+                    if (Segments[0].HostAm != 6) Assert.Fail();
+                    if (Segments[0].Id != 0) Assert.Fail();
+                }
+                else Assert.Fail();
+                
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
     }
 
 }

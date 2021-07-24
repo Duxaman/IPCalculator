@@ -35,7 +35,7 @@ namespace IPCalculator
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -51,12 +51,12 @@ namespace IPCalculator
                     Data.Segments = Segments;
                     Data.NetTree = NetTree;
                     File.WriteAllText(SaveNetTreeDialog.FileName, JsonConvert.SerializeObject(Data));
-                    MessageBox.Show("Текущее дерево сетей сохранено");
+                    MessageBox.Show("Current net tree has been saved");
                 }
             }
             else
             {
-                MessageBox.Show("Дерево сетей не инициализировано");
+                MessageBox.Show("Net tree is not initialized ");
             }
         }
 
@@ -200,11 +200,11 @@ namespace IPCalculator
                 catch (CannotDistributeNetsException ex)
                 {
                     ClearData();
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 catch (ArgumentException ex)
                 {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -340,6 +340,7 @@ namespace IPCalculator
                 Segments.Remove(AggregatedNets[i].Id); // delete net from allocated nets
             }
             CreateTreeView(NetTree.Root);
+            UpdateSummaryTable();
             return AggregatedNets;
         }
 
@@ -351,11 +352,7 @@ namespace IPCalculator
             }
             catch (CannotAggregateNetsException ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (NodeNotFoundException)
-            {
-                MessageBox.Show("Дерево было изменено вне программы и имеет неверный формат", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -367,11 +364,7 @@ namespace IPCalculator
             }
             catch (CannotAggregateNetsException ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (NodeNotFoundException)
-            {
-                MessageBox.Show("Дерево было изменено вне программы и имеет неверный формат", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

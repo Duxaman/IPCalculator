@@ -60,7 +60,7 @@ namespace IPCalculator
             try
             {
                 string[] Elements = AddressString.Trim().Split('.');
-                if (Elements.Length != 4) throw new ArgumentException("Недопустимый формат адреса"); //TODO: language
+                if (Elements.Length != 4) throw new ArgumentException("Incorrect address format  ");
                 else
                 {
                     Bytes = new byte[] { Convert.ToByte(Elements[0]), Convert.ToByte(Elements[1]), Convert.ToByte(Elements[2]), Convert.ToByte(Elements[3]) };
@@ -72,7 +72,7 @@ namespace IPCalculator
             }
             catch (Exception ex)
             {
-                throw new ArgumentException("Недопустимый формат адреса: " + ex.Message);
+                throw new ArgumentException("Incorrect address format  " + ": " + ex.Message);
             }
         }
         public byte this[int index]

@@ -76,7 +76,7 @@ namespace IPCalculator
         [JsonConstructor]
         public Net(Address Address, int Mask)
         {
-            if(Mask < 0 || Mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
+            if(Mask < 0 || Mask > 30) throw new ArgumentException("Incorrect subnet mask specified ");
             this.Address = Address;
             this.Mask = Mask;
             Address = Address & FullMask; //in case input is not the net address
@@ -88,7 +88,7 @@ namespace IPCalculator
                 string[] elements = net.Trim().Split('/');
                 Address = new Address(elements[0]);
                 Mask = System.Convert.ToInt32(elements[1]);
-                if (Mask < 0 || Mask > 30) throw new ArgumentException("Неверно задана маска сети"); //TODO
+                if (Mask < 0 || Mask > 30) throw new ArgumentException("Incorrect subnet mask specified ");
                 Address = Address & FullMask; //in case input is not the net address
             }
             catch(ArgumentException)
@@ -97,7 +97,7 @@ namespace IPCalculator
             }
             catch(Exception ex)
             {
-                throw new ArgumentException("Неверно задана маска сети: " + ex.Message);
+                throw new ArgumentException("Incorrect subnet mask specified " +  " " + ex.Message);
             }
         }
         public override string ToString()

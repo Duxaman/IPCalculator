@@ -23,7 +23,7 @@ namespace IPCalculator
             //shift all net part bits
             address <<= Root.Net.Mask;
             int BitsToMove = NodeToLocate.Mask - Root.Net.Mask;
-            if (BitsToMove < 0) throw new NodeNotFoundException("Текущее поддерево не содержит искомого узла");
+            if (BitsToMove < 0) throw new NodeNotFoundException("Current subtree does not have specified node ");
             for (int i = 0; i < BitsToMove; ++i)   //first remaining (needed mask - rootmask) bits is the path to the node in the tree
             {
                 if (address >> 31 == 0)
@@ -109,7 +109,7 @@ namespace IPCalculator
                 {
                     if (CurNode.Net.HostAm < Segment.HostAm) //if in curent have not enought place then there is no place in subnodes eather
                     {
-                        throw new CannotDistributeNetsException("Невозможно распределить сеть с " + Segment.HostAm + " хостами, наибольший узел может вместить лишь " + CurNode.Net.HostAm + " хостов");
+                        throw new CannotDistributeNetsException("Cannot distribute nets in current subtree, hosts required/actual: " + Segment.HostAm + "/" + CurNode.Net.HostAm );
                     }
                     CreateChildren(ref CurNode); //try to create children
                     if (CurNode.Left != null)
@@ -151,17 +151,17 @@ namespace IPCalculator
         {
             if (Node.State == State.Occupied)
             {
+                NetSegment Net = new NetSegment(); //create net segment
+                Net.Id = Node.OccupyId;
+                Net.HostAm = Node.Net.HostAm;
+                Segments.Add(Net);
                 Node.State = State.Free;   //free node (in case if its root node)
                 Node.OccupyId = -1;
                 if (Node.Left != null)
                 {
                     Node.Left = null;
                     Node.Right = null;
-                }
-                NetSegment Net = new NetSegment(); //create net segment
-                Net.Id = Node.OccupyId;
-                Net.HostAm = Node.Net.HostAm;
-                Segments.Add(Net);
+                }             
             }
             else if (Node.Left != null)  //if node is free
             {
@@ -178,13 +178,13 @@ namespace IPCalculator
         /// <param name="SegmentsToAllocate"></param>
         public void DistributeNet(NetTreeNode rootnode, ref NetSegment[] SegmentsToAllocate)
         {
-            if (SegmentsToAllocate.Length == 0) throw new CannotDistributeNetsException("Массив сетей пуст");
+            if (SegmentsToAllocate.Length == 0) throw new CannotDistributeNetsException("Net array is empty ");
             NetSegment[] SortedNets = SegmentsToAllocate.OrderByDescending(x => x.HostAm).ToArray();
             for (int i = 0; i < SortedNets.Length; ++i)
             {
                 bool finishmark = false;
                 AllocateToSmallestNode(rootnode, ref SortedNets[i], ref finishmark);
-                if (!finishmark) throw new CannotDistributeNetsException("В данном узле нет места для всех необходимых сетей");
+                if (!finishmark) throw new CannotDistributeNetsException("Current node doesn't have enought place for all nets ");
             }
         }
         /// <summary>
@@ -202,7 +202,7 @@ namespace IPCalculator
             }
             else
             {
-                throw new CannotAggregateNetsException("Невозможно аггрегировать узел который является листом"); //TODO:
+                throw new CannotAggregateNetsException("Cannot aggregate node that is a leaf ");
             }
         }
 
