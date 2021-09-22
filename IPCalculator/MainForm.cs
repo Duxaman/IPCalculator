@@ -333,15 +333,19 @@ namespace IPCalculator
         /// <returns>An array of aggregated nets</returns>
         private NetSegment[] AggregateNodes()
         {
-            NetTreeNode Node = NetTree.LocateNode(new Net(NetTreeView.SelectedNode.Text));
-            NetSegment[] AggregatedNets = NetTree.AggregateNode(Node);  //get aggregated nodes
-            for (int i = 0; i < AggregatedNets.Length; ++i) //for each net
+            if (NetTree != null)
             {
-                Segments.Remove(AggregatedNets[i].Id); // delete net from allocated nets
+                NetTreeNode Node = NetTree.LocateNode(new Net(NetTreeView.SelectedNode.Text));
+                NetSegment[] AggregatedNets = NetTree.AggregateNode(Node);  //get aggregated nodes
+                for (int i = 0; i < AggregatedNets.Length; ++i) //for each net
+                {
+                    Segments.Remove(AggregatedNets[i].Id); // delete net from allocated nets
+                }
+                CreateTreeView(NetTree.Root);
+                UpdateSummaryTable();
+                return AggregatedNets;
             }
-            CreateTreeView(NetTree.Root);
-            UpdateSummaryTable();
-            return AggregatedNets;
+            else throw new CannotAggregateNetsException("Net tree is not initialized");
         }
 
         private void AggregateMenuItem_Click(object sender, EventArgs e)
